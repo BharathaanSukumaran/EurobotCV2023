@@ -12,6 +12,7 @@ import cv2
 import sys
 
 
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--camera", required=True, help="Set to True if using webcam")
 ap.add_argument("-v", "--video", help="Path to the video file")
@@ -19,7 +20,7 @@ ap.add_argument("-t", "--type", type=str, default="DICT_ARUCO_ORIGINAL", help="T
 args = vars(ap.parse_args())
 
 if args["camera"].lower() == "true":
-	video = cv2.VideoCapture(0)
+	video = cv2.VideoCapture(1)
 	time.sleep(2.0)
 	
 else:
