@@ -33,10 +33,11 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     # If markers are detected
     if len(corners) > 0:
         for i in range(0, len(ids)):
-            print(ids[i])
             # Estimate pose of each marker and return the values rotational vector and translational vector---(different from those of camera coefficients)
             rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
                                                                        distortion_coefficients)
+            print("Distance"+str(ids[i])+": "+str(tvec[0][0][2]))
+            print("Rotational Matrix" +str(ids[i]) +": "+str(rvec[0][0]))                                                          
             # Draw a square around the markers
             cv2.aruco.drawDetectedMarkers(frame, corners) 
 
