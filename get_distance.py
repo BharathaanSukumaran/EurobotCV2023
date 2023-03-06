@@ -24,11 +24,12 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     '''
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cv2.aruco_dict = cv2.aruco.Dictionary(aruco_dict_type)
+    cv2.aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
     parameters = cv2.aruco.DetectorParameters()
 
     corners, ids, rejectedids = cv2.aruco.detectMarkers(gray, cv2.aruco_dict,parameters=parameters)
 
+    markers_dict = {}
 
     # If markers are detected
     if len(corners) > 0:
@@ -36,13 +37,21 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             # Estimate pose of each marker and return the values rotational vector and translational vector---(different from those of camera coefficients)
             rvec, tvec, markerPoints = cv2.aruco.estimatePoseSingleMarkers(corners[i], 0.02, matrix_coefficients,
                                                                        distortion_coefficients)
-            print("Distance"+str(ids[i])+": "+str(tvec[0][0][2]))
-            # print("Rotational Matrix" +str(ids[i]) +": "+str(rvec[0][0]))                                                          
+            # print("Distance"+str(ids[i])+": "+str(tvec[0][0]))
+            # print("Rotational Matrix" +str(ids[i]) +": "+sstr(rvec[0][0]))                                                          
             # Draw a square around the markers
-            cv2.aruco.drawDetectedMarkers(frame, corners) 
+            cv2.aruco.drawDetectedMarkers(frame, corners)
+            markers_dict[ids[i][0]] = tvec 
 
             # Draw Axes on image
-            cv2.drawFrameAxes(frame, matrix_coefficients, distortion_coefficients, rvec, tvec, 0.01)  
+
+
+        for marker in markers_dict:  
+            if marker != 66:
+                try:
+                    print("Distance between bot and {} is {}".format(marker,np.linalg.norm(markers_dict[66]-markers_dict[marker])))
+                except:
+                    print("Searching for markers...")
 
     return frame
 

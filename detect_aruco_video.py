@@ -16,6 +16,8 @@ import sys
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--camera", required=True, help="Set to True if using webcam")
 ap.add_argument("-v", "--video", help="Path to the video file")
+ap.add_argument("-k", "--K_Matrix", required=True, help="Path to calibration matrix (numpy file)")
+ap.add_argument("-d", "--D_Coeff", required=True, help="Path to distortion coefficients (numpy file)")
 ap.add_argument("-t", "--type", type=str, default="DICT_ARUCO_ORIGINAL", help="Type of ArUCo tag to detect")
 args = vars(ap.parse_args())
 
@@ -34,8 +36,13 @@ if ARUCO_DICT.get(args["type"], None) is None:
 	print(f"ArUCo tag type '{args['type']}' is not supported")
 	sys.exit(0)
 
-arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT[args["type"]])
-arucoParams = cv2.aruco.DetectorParameters_create()
+arucoDict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[args["type"]])
+arucoParams = cv2.aruco.DetectorParameters()
+calibration_matrix_path = args["K_Matrix"]
+distortion_coefficients_path = args["D_Coeff"]
+
+k = np.load(calibration_matrix_path)
+d = np.load(distortion_coefficients_path)
 
 while True:
 	ret, frame = video.read()
@@ -51,7 +58,7 @@ while True:
 	frame = cv2.resize(frame, (width, height), interpolation=cv2.INTER_CUBIC)
 	corners, ids, rejected = cv2.aruco.detectMarkers(frame, arucoDict, parameters=arucoParams)
 
-	detected_markers = aruco_display(corners, ids, rejected, frame)
+	detected_markers = aruco_display(corners, ids, rejected, frame,k,d)
 
 	cv2.imshow("Image", detected_markers)
 
